@@ -9,6 +9,8 @@ const bodyParser = require('body-parser')
 const nodemailer = require('nodemailer')
 const xoauth2 = require('xoauth2')
 const { pathOr } = require('ramda')
+const checkReqFields = require('./components/check-required-fields')
+const checkFields = checkReqFields(['name', 'email', 'date'])
 
 app.use(cors({ credentials: true }))
 
@@ -26,13 +28,8 @@ app.post('/contact', function(req, res, next) {
   const contact = pathOr(null, ['body'], req)
   console.log(contact)
 
-  // const fieldResults = checkVenueFields(venue)
-  //
-  // if (fieldResults.length > 0) {
-  //   return next(
-  //     new HTTPError(400, 'Missing required fields', { fields: fieldResults })
-  //   )
-  // }
+  const field = pathOr(null, ['body'], req)
+  const fieldResults = checkFields(field)
 
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -48,43 +45,38 @@ app.post('/contact', function(req, res, next) {
   const mailOptions = {
     from: 'The Charleston Wedding Band <rroyson2@gmail.com>',
     to: 'rroyson2@gmail.com',
-    subject: `Inquiry from ${contact.name}`,
-    text: `${contact.name}`
+    subject: `New Wedding Inquiry`,
+    text: `
+      Name: ${contact.name}
+      Email: ${contact.email}
+      Date of event: ${contact.date}
+      Venue Name: ${contact.venueName}
+      Venue Location: ${contact.venueLocation}
+      Venue Address: ${contact.address}
+      Comments: ${contact.comments}
+    `
   }
 
-  transporter.sendMail(mailOptions, function(err, res) {
-    if (err) return next(new HTTPError(err.status, err.message, err))
-    res.status(201).send(result)
-  })
-  return res.end()
-})
+  if (fieldResults.length > 0) {
+    return next(
+      new HTTPError(400, 'Missing required fields', { fields: fieldResults })
+    )
+  } else {
+    transporter.sendMail(mailOptions, function(err, result) {
+      console.log('mailOptions', mailOptions)
+      console.log('err', err)
+      console.log('result', result)
+      if (err) {
+        return next(new HTTPError(err.status, err.message, err))
+      } else {
+        res.status(201).send(result)
+      }
+      return res.end()
+    })
+  }
 
-// let transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     type: 'OAuth2',
-//     user: 'rroyson2@gmail.com',
-//     clientId: process.env.REACT_APP_API_AUTH_ID,
-//     clientSecret: process.env.REACT_APP_API_AUTH_SECRET,
-//     refreshToken: process.env.REACT_APP_API_AUTH_REFRESH
-//   }
-// })
-//
-// const mailOptions = {
-//   from: 'Rob <rroyson2@gmail.com>',
-//   to: 'rroyson2@gmail.com',
-//   subject: 'nodemailer test',
-//   text: 'Hello Mail'
-// }
-//
-// transporter.sendMail(mailOptions, function(err, res) {
-//   if (err) {
-//     return console.log('Error', err)
-//   } else {
-//     console.log('Success')
-//     console.log(res)
-//   }
-// })
+  //return res.end()
+})
 
 ///Middleware
 

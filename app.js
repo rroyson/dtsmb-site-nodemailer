@@ -46,14 +46,76 @@ app.post('/contact', function(req, res, next) {
     from: 'The Charleston Wedding Band <rroyson2@gmail.com>',
     to: 'rroyson2@gmail.com',
     subject: `New Wedding Inquiry`,
-    text: `
-      Name: ${contact.name}
-      Email: ${contact.email}
-      Date of event: ${contact.date}
-      Venue Name: ${contact.venueName}
-      Venue Location: ${contact.venueLocation}
-      Venue Address: ${contact.address}
-      Comments: ${contact.comments}
+    html: `
+    <div>
+
+    <main className="athelas">
+      <div className="center flex-column mt4 w-100 tc bg-white-80 black avenir">
+        <h1> Suck it Cam</h1>
+        <h3> ${contact.name
+          ? contact.name
+          : 'Nobody'} wants to get some prices </h3>
+        <hr />
+      </div>
+      <ul className="list pl0">
+        <li className="pa3 pa4-ns bb b--black-10">
+          <b className="db f3 mb1">Date of Event</b>
+          <span className="f5 db lh-copy measure">
+            ${contact.date ? contact.date : 'No Date Provided'}
+          </span>
+        </li>
+        <li className="pa3 pa4-ns bb b--black-10">
+          <b className="db f3 mb1">
+            Venue Name
+          </b>
+          <span className="f5 db lh-copy measure">
+             ${contact.venueName ? contact.venueName : 'No Venue Provided'}
+          </span>
+        </li>
+        <li className="pa3 pa4-ns bb b--black-10">
+          <b className="db f3 mb1">
+            Where is it?
+          </b>
+          <span className="f5 db lh-copy measure">
+            The venue is located at ${contact.venueLocation
+              ? contact.venueLocation
+              : 'your moms house'}
+          </span>
+        </li>
+        <li className="pa3 pa4-ns bb b--black-10">
+          <b className="db f3 mb1">
+            Contact Email
+          </b>
+          <span className="f5 db lh-copy measure">
+            ${contact.email ? contact.email : 'No Email Provided'}
+          </span>
+        </li>
+        <li className="pa3 pa4-ns bb b--black-10">
+          <b className="db f3 mb1">
+            Contact Number
+          </b>
+          <span className="f5 db lh-copy measure">
+            ${contact.phone ? contact.phone : 'No Phone Number Provided'}
+          </span>
+        </li>
+        <li className="pa3 pa4-ns bb b--black-10">
+          <b className="db f3 mb1">
+            Comments/Special Requests
+          </b>
+          <span className="f5 db lh-copy measure">
+            ${contact.comments
+              ? contact.comments
+              : 'They have nothing to say to you'}
+          </span>
+        </li>
+
+      </ul>
+      <div className="flex justify-center " />
+    </main>
+  </div>
+
+
+
     `
   }
 

@@ -120,12 +120,13 @@ app.post('/contact', function(req, res, next) {
   }
 
   if (fieldResults.length > 0) {
+    console.log(fieldResults.name, 'fieldResults.name')
     return next(
       new HTTPError(400, 'Missing required fields', { fields: fieldResults })
     )
   } else {
     transporter.sendMail(mailOptions, function(err, result) {
-      console.log('mailOptions', mailOptions)
+      console.log(fieldResults, 'fieldResults')
       console.log('err', err)
       console.log('result', result)
       if (err) {
